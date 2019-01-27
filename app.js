@@ -19,4 +19,9 @@ app.use('/article', articleRouter);
 
 
 app.listen(8080)
+
+process.on('uncaughtException', function(err) {
+  console.log( "UNCAUGHT EXCEPTION" + err.stack || err.message );
+});
+
 module.exports = app;
