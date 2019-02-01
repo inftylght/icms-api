@@ -1,12 +1,7 @@
-const mysql = require('mysql')
+const mysql = require('mysql');
+const config = require('./config');
 
-const pool = mysql.createPool({
-  connectionLimit: 100,
-  host: 'localhost',
-  user: 'root',
-  password: 'MGBxYbHVaLYE3znyfHbTBUKSEgjuJu',
-  database: 'icms',
-})
+const pool = mysql.createPool(config.db);
 
 module.exports = {
   query: function(sql, value=[]) {

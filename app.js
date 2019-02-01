@@ -3,6 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const config = require('./config');
 
 const articleRouter = require('./routes/article');
 
@@ -18,7 +19,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/article', articleRouter);
 
 
-app.listen(8080)
+app.listen(config.host.port);
 
 process.on('uncaughtException', function(err) {
   console.log( "UNCAUGHT EXCEPTION" + err.stack || err.message );
