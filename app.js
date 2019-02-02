@@ -19,7 +19,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/article', articleRouter);
 
 
-app.listen(config.host.port);
+app.listen(config.host.port, function() {
+  console.log(`running at http://localhost:${config.host.port}`)
+});
 
 process.on('uncaughtException', function(err) {
   console.log( "UNCAUGHT EXCEPTION" + err.stack || err.message );
