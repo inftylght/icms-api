@@ -10,7 +10,7 @@ router.get('/list', (req, res, next) => {
             for (const result of results) {
                 articleList.push({
                     id: result.id,
-                    title: result.title
+                    title: result.title? result.title.substr(0, 200): ''
                 });
             }
             res.send(articleList);

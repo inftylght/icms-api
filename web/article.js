@@ -7,14 +7,7 @@ router.get('/list', (req, res, next) => {
     const query = {...req.query};
     const sqlParameter = [];
 
-    let sql = `select article.id      as id,
-                       article.title   as title,
-                       content.type    as type,
-                       content.content as content,
-                       content.order   as \`order\`
-                from article
-                       left join content on article.id = content.article_id
-                order by  article.create_date desc, article.id, content.order`;
+    let sql = `select * from article order by create_date desc`;
 
     if (query.limit) {
         sql += ' limit ?';
@@ -22,64 +15,40 @@ router.get('/list', (req, res, next) => {
     }
 
     db.query(sql, sqlParameter)
-        .then(([results, fields]) => {
+        .then(([results]) => {
             const articleList = [];
             for (const result of results) {
-                let article = articleList.find((data) => {
-                    return data.id === result.id;
+                articleList.push({
+                    id: result.id,
+                    title: result.title,
+                    text: result.text? result.text.substr(0, 200): '',
                 });
-                const contentRes = {
-                    type: result.type,
-                    content: result.content
-                };
-                if (article) {
-                    article.contents.push(contentRes);
-                } else {
-                    articleList.push({
-                        id: result.id,
-                        title: result.title,
-                        contents: [
-                            contentRes
-                        ]
-                    });
-                }
             }
-            res.json(articleList);
-        })
-        .catch(error => {
-            res.status(500).json(null);
+            res.send(articleList);
         });
 });
 router.get('/:id', function(req, res, next) {
-    const parameters = {...req.params};
+    const params = {...req.params};
     const sql = `select article.id      as id,
                        article.title   as title,
-                       content.type    as type,
-                       content.content as content,
-                       content.order   as \`order\`
+                       article.text    as text
                 from article
-                       left join content on article.id = content.article_id
-                where article.id=?
-                order by content.order`;
-    db.query(sql, [parameters.id])
+                where article.id=?`;
+    db.query(sql, [Number(params.id)])
         .then(([results]) => {
             let article = null;
             for (const result of results) {
-                if (article === null) {
-                    article = {
-                        title: result.title,
-                        contents: []
-                    };
-                }
-                article.contents.push({
-                    type: result.type,
-                    content: result.content
-                });
+                article = {
+                    id: result.id,
+                    title: result.title,
+                    text: result.text
+                };
             }
             res.json(article);
         })
         .catch(error => {
-            res.status(500).json(null);
+            res.status(500)
+                .json(null);
         });
 });
 
