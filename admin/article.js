@@ -46,11 +46,24 @@ router.get('/:id', (req, res, next) => {
 router.put('/', (req, res, next) => {
     const body = req.body;
     const sql = `update article
-                set title=?,
-                    text=?,
-                    update_date=current_timestamp()
-                where id = ?`;
+                 set title=?,
+                     text=?,
+                     update_date=current_timestamp()
+                 where id = ?`;
     db.query(sql, [body.title, body.text, Number(body.id)])
+        .then(([result]) => {
+            res.json({status: 'success'})
+        })
+        .catch((error) => {
+            res.status(500).json(null);
+        });
+});
+
+router.post('/', (req, res, next) => {
+    const body = req.body;
+    const sql = `insert into article(title, text)
+                 values (?, ?)`;
+    db.query(sql, [body.title, body.text])
         .then(([result]) => {
             res.json({status: 'success'})
         })
