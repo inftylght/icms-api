@@ -5,7 +5,8 @@ const logger = require('morgan');
 const cors = require('cors');
 const config = require('./config');
 
-const articleRouter = require('./routes/article');
+const webRouter = require('./web/router');
+const adminRouter = require('./admin/router');
 
 const app = express();
 
@@ -16,7 +17,8 @@ app.use(cookieParser());
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/article', articleRouter);
+app.use('/web', webRouter);
+app.use('/admin', adminRouter);
 
 
 app.listen(config.host.port, function() {
