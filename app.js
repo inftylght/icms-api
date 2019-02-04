@@ -19,6 +19,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/web', webRouter);
 app.use('/admin', adminRouter);
+app.use('/', function() {
+  res.status(404).send();
+});
 
 
 app.listen(config.host.port, function() {
