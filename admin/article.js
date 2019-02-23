@@ -10,7 +10,8 @@ router.get('/list', (req, res, next) => {
             for (const result of results) {
                 articleList.push({
                     id: result.id,
-                    title: result.title? result.title.substr(0, 200): ''
+                    title: result.title? result.title.substr(0, 200): '',
+                    titleEN: result.titleEN? result.titleEN.substr(0, 200): ''
                 });
             }
             res.send(articleList);
@@ -19,9 +20,7 @@ router.get('/list', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
     const params = {...req.params};
-    const sql = `select article.id      as id,
-                       article.title   as title,
-                       article.text    as text
+    const sql = `select *
                 from article
                 where article.id=?`;
     db.query(sql, [Number(params.id)])
@@ -31,7 +30,9 @@ router.get('/:id', (req, res, next) => {
                 article = {
                     id: result.id,
                     title: result.title,
-                    text: result.text
+                    text: result.text,
+                    titleEN: result.titleEN,
+                    textEN: result.textEN
                 };
             }
             res.json(article);
@@ -48,9 +49,11 @@ router.put('/', (req, res, next) => {
     const sql = `update article
                  set title=?,
                      text=?,
+                     titleEN=?,
+                     textEN=?,
                      update_date=current_timestamp()
                  where id = ?`;
-    db.query(sql, [body.title, body.text, Number(body.id)])
+    db.query(sql, [body.title, body.text, body.titleEN, body.textEN, Number(body.id)])
         .then(([result]) => {
             res.json({status: 'success'})
         })
@@ -61,9 +64,9 @@ router.put('/', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
     const body = req.body;
-    const sql = `insert into article(title, text)
-                 values (?, ?)`;
-    db.query(sql, [body.title, body.text])
+    const sql = `insert into article(title, text, titleEN, textEN)
+                 values (?, ?, ?, ?)`;
+    db.query(sql, [body.title, body.text, body.titleEN, body.textEN])
         .then(([result]) => {
             res.json({status: 'success'})
         })
