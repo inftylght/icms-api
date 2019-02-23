@@ -72,4 +72,16 @@ router.post('/', (req, res, next) => {
         });
 });
 
+router.delete('/:id', (req, res, next) => {
+    const params = {...req.params};
+    const sql = `delete from article where id=?`;
+    db.query(sql, [Number(params.id)])
+        .then(([result]) => {
+            res.json({status: 'success'})
+        })
+        .catch((error) => {
+            res.status(500).json(null);
+        });
+});
+
 module.exports = router;
