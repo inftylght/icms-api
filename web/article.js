@@ -22,6 +22,8 @@ router.get('/list', (req, res, next) => {
                     id: result.id,
                     title: result.title,
                     text: result.text? result.text.substr(0, 200): '',
+                    titleEN: result.titleEN,
+                    textEN: result.textEN? result.textEN.substr(0, 200): '',
                 });
             }
             res.send(articleList);
