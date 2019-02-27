@@ -32,7 +32,8 @@ router.get('/:id', (req, res, next) => {
                     title: result.title,
                     text: result.text,
                     titleEN: result.titleEN,
-                    textEN: result.textEN
+                    textEN: result.textEN,
+                    youtube: result.youtube
                 };
             }
             res.json(article);
@@ -51,9 +52,10 @@ router.put('/', (req, res, next) => {
                      text=?,
                      titleEN=?,
                      textEN=?,
+                     youtube=?,
                      update_date=current_timestamp()
                  where id = ?`;
-    db.query(sql, [body.title, body.text, body.titleEN, body.textEN, Number(body.id)])
+    db.query(sql, [body.title, body.text, body.titleEN, body.textEN, body.youtube, Number(body.id)])
         .then(([result]) => {
             res.json({status: 'success'})
         })
@@ -64,9 +66,9 @@ router.put('/', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
     const body = req.body;
-    const sql = `insert into article(title, text, titleEN, textEN)
-                 values (?, ?, ?, ?)`;
-    db.query(sql, [body.title, body.text, body.titleEN, body.textEN])
+    const sql = `insert into article(title, text, titleEN, textEN, youtube)
+                 values (?, ?, ?, ?, ?)`;
+    db.query(sql, [body.title, body.text, body.titleEN, body.textEN, body.youtube])
         .then(([result]) => {
             res.json({status: 'success'})
         })
