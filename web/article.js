@@ -43,7 +43,8 @@ router.get('/:id', function(req, res, next) {
                     title: result.title,
                     text: result.text,
                     titleEN: result.titleEN,
-                    textEN: result.textEN
+                    textEN: result.textEN,
+                    youtube: result.youtube
                 };
             }
             res.json(article);
