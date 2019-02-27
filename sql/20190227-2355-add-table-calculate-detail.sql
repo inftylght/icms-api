@@ -7,3 +7,5 @@ create or replace table if not exists calculate
 	create_date datetime default CURRENT_TIMESTAMP null
 );
 
+alter table calculate_detail
+	add calculate_id int not null after type;
