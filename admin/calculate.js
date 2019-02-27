@@ -23,7 +23,11 @@ router.post('/', (req, res, next) => {
                  values (?, ?)`;
     db.query(sql, [body.name, body.nameEN])
         .then(([result]) => {
-            res.json(result);
+            const calculateId = result.insertId;
+            const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
+                              values (?, ?, ?, ?, ?);`;
+
+            res.json({status: 'success'});
         })
         .catch(error => {
             res.status(500)
