@@ -15,6 +15,24 @@ router.get('/list', async (req, res, next) => {
     }
 });
 
+router.get('/:id', async (req, res, next) => {
+   try {
+       let calculateRes = null;
+       const params = {...req.params};
+       const calculateSql = `select * from calculate where id=?`;
+       const calculateQuery = await db.query(calculateSql, [Number(params.id)]);
+       if (calculateQuery.results.length > 0) {
+           calculateRes = calculateQuery.results[0];
+           const calculateDetailSql = 'select * from calculate_detail where calculate_id=?';
+           const calculateDetailQuery = await db.query(calculateDetailSql, [Number(params.id)]);
+           calculateRes.forms = calculateDetailQuery.results;
+       }
+       res.json(calculateRes);
+   } catch (error) {
+       next(error)
+   }
+});
+
 router.post('/', async (req, res, next) => {
     try {
         const body = {...req.body};
@@ -48,17 +66,36 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/', async (req, res, next) => {
     try {
         const body = {...req.body};
-        const param = req.params;
-        const sql = `update calculate
+        const calculateUpdateSql = `update calculate
                  set name=?,
-                     nameEN=?
+                     nameEN=?,
+                     formula=?
                  where id = ?`;
+        await db.query(calculateUpdateSql, [body.name, body.nameEN, body.formula, Number(body.id)]);
+        const calculateDetailDeleteSql = `delete from calculate_detail where calculate_id=?`;
+        await db.query(calculateDetailDeleteSql, [Number(body.id)]);
 
-        await db.query(sql, [body.name, body.nameEN, Number(body.id)]);
+        const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
+                                          values (?, ?, ?, ?, ?);`;
+        const calculateDetailsSQueries = [];
 
+        const forms = body.forms;
+
+        for (let form of forms) {
+            let config = null;
+            if (form.type==='Number') {
+                config = form.value;
+            } else if (form.type==='Selection'){
+                config = form.selectionList;
+            }
+            calculateDetailsSQueries.push(db.query(insertCalculateDetailSql,
+                [form.name, form.nameEN, JSON.stringify(config), form.type, body.id]));
+        }
+
+        await Promise.all(calculateDetailsSQueries);
         res.json({status: 'success'});
     } catch (error) {
         next(error)
