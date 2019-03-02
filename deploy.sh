@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 BASEDIR=$(dirname "$0")
 cd "$BASEDIR"
-git reset --hard || exit "$?"
-git pull || exit "$?"
+cp config.prod.js config.js
 yarn install
-pm2 restart all -s
+pm2 stop app.js
+pm2 start app.js
 pm2 status
