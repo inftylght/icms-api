@@ -24,14 +24,22 @@ app.use('/admin', adminRouter);
 app.use('/', (req, res, next) => {
   res.status(404).send();
 });
+app.use((error, req, res, next) => {
+  console.error(error.stack);
+  res.status(500).send();
+});
 
 
 app.listen(config.host.port, function() {
   console.log(`running at http://localhost:${config.host.port}`)
 });
 
+process.on('unhandledRejection', (reason, p) => {
+  console.error(reason, 'Unhandled Rejection at Promise', p);
+});
 process.on('uncaughtException', function(err) {
-  console.log( "UNCAUGHT EXCEPTION" + err.stack || err.message );
+  console.error( "UNCAUGHT EXCEPTION" + err.stack || err.message );
+  process.exit(1);
 });
 
 module.exports = app;

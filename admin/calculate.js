@@ -4,50 +4,57 @@ const db = require('../db');
 
 module.exports = router;
 
-router.get('/list', (req, res, next) => {
-    const sql = `select *
+router.get('/list', async (req, res, next) => {
+    try {
+        const sql = `select *
                  from calculate`;
-    db.query(sql)
-        .then(([result]) => {
-            res.json(result);
-        })
-        .catch(error => {
-            res.status(500)
-                .json(null);
-        });
+        const calculateResults = await db.query(sql);
+        res.send(calculateResults.results);
+    } catch (error) {
+        next(error);
+    }
 });
 
-router.post('/', (req, res, next) => {
-    const body = {...req.body};
-    const sql = `insert into calculate(name, nameEN)
+router.post('/', async (req, res, next) => {
+    try {
+        const body = {...req.body};
+        const sql = `insert into calculate(name, nameEN)
                  values (?, ?)`;
-    db.query(sql, [body.name, body.nameEN])
-        .then(([result]) => {
-            const calculateId = result.insertId;
-            const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
-                              values (?, ?, ?, ?, ?);`;
+        const calculateResult = await db.query(sql, [body.name, body.nameEN]);
+        const calculateId = calculateResult.results.insertId;
 
-            res.json({status: 'success'});
-        })
-        .catch(error => {
-            res.status(500)
-                .json(null);
-        });
+        const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
+                                          values (?, ?, ?, ?, ?);`;
+        const calculateDetailsSQueries = [];
+
+        const forms = body.forms;
+
+        for (let form of forms) {
+            calculateDetailsSQueries.push(db.query(insertCalculateDetailSql,
+                [form.name, form.nameEN, JSON.stringify(form.config), form.type, calculateId]));
+        }
+
+        await Promise.all(calculateDetailsSQueries);
+        res.json({status: 'success'});
+
+    } catch (error) {
+        next(error);
+    }
 });
 
-router.put('/{id}', (req, res, next) => {
-    const body = {...req.body};
-    const param = req.params;
-    const sql = `update calculate
+router.put('/{id}', async (req, res, next) => {
+    try {
+        const body = {...req.body};
+        const param = req.params;
+        const sql = `update calculate
                  set name=?,
                      nameEN=?
                  where id = ?`;
-    db.query(sql, [body.name, body.nameEN, Number(body.id)])
-        .then(([result]) => {
-            res.json({status: 'success'});
-        })
-        .catch(error => {
-            res.status(500)
-                .json(null);
-        });
+
+        await db.query(sql, [body.name, body.nameEN, Number(body.id)]);
+
+        res.json({status: 'success'});
+    } catch (error) {
+        next(error)
+    }
 });

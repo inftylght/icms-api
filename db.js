@@ -11,7 +11,7 @@ module.exports = {
           console.error(error);
           reject(error)
         } else {
-          resolve([results, fields])
+          resolve({results, fields})
         }
       })
     });
