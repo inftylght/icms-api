@@ -30,8 +30,14 @@ router.post('/', async (req, res, next) => {
         const forms = body.forms;
 
         for (let form of forms) {
+            let config = null;
+            if (form.type==='Number') {
+                config = form.value;
+            } else if (form.type==='Selection'){
+                config = form.selectionList;
+            }
             calculateDetailsSQueries.push(db.query(insertCalculateDetailSql,
-                [form.name, form.nameEN, JSON.stringify(form.config), form.type, calculateId]));
+                [form.name, form.nameEN, JSON.stringify(config), form.type, calculateId]));
         }
 
         await Promise.all(calculateDetailsSQueries);
@@ -42,7 +48,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.put('/{id}', async (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
     try {
         const body = {...req.body};
         const param = req.params;
@@ -58,3 +64,24 @@ router.put('/{id}', async (req, res, next) => {
         next(error)
     }
 });
+
+router.delete('/:id', async (req, res, next) => {
+    try {
+        const params = {...req.params};
+        const deleteCalculateSql = `delete
+                 from calculate
+                 where id = ?`;
+        const deleteCalculateDetailSql = `
+            delete from calculate_detail
+            where calculate_id=?
+        `;
+        const deleteQueriesPromise = [
+            db.query(deleteCalculateSql, [Number(params.id)]),
+            db.query(deleteCalculateDetailSql, [Number(params.id)])
+        ];
+        await Promise.all(deleteQueriesPromise);
+        res.json({status: 'success'});
+    } catch (error) {
+        next(error);
+    }
+})
