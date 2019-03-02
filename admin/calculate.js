@@ -18,9 +18,9 @@ router.get('/list', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const body = {...req.body};
-        const sql = `insert into calculate(name, nameEN)
-                 values (?, ?)`;
-        const calculateResult = await db.query(sql, [body.name, body.nameEN]);
+        const sql = `insert into calculate(name, nameEN, formula)
+                 values (?, ?, ?)`;
+        const calculateResult = await db.query(sql, [body.name, body.nameEN, body.formula]);
         const calculateId = calculateResult.results.insertId;
 
         const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
