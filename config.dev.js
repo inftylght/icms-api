@@ -7,6 +7,12 @@ module.exports = {
         database: 'icms_dev',
     },
     host: {
-        port: 8080
+        port: 8080,
+        webCorsOptions: {
+            origin: 'http://localhost:4200'
+        },
+        adminCorsOption: {
+            origin: 'https://localhost:4200'
+        }
     },
 };

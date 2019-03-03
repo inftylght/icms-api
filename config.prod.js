@@ -7,6 +7,12 @@ module.exports = {
         database: 'icms',
     },
     host: {
-        port: 45628
+        port: 45628,
+        webCorsOptions: {
+            origin: 'https://www.nl-insu.com'
+        },
+        adminCorsOption: {
+            origin: 'https://admin.nl-insu.com'
+        }
     }
 };
