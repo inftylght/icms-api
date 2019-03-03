@@ -12,7 +12,7 @@ module.exports = {
             origin: 'http://localhost:4200'
         },
         adminCorsOption: {
-            origin: 'https://localhost:4200'
+            origin: 'http://localhost:4200'
         }
     },
 };
