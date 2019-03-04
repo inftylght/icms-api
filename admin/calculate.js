@@ -43,8 +43,6 @@ router.post('/', async (req, res, next) => {
 
         const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
                                           values (?, ?, ?, ?, ?);`;
-        const calculateDetailsSQueries = [];
-
         const forms = body.forms;
 
         for (let form of forms) {
@@ -54,11 +52,9 @@ router.post('/', async (req, res, next) => {
             } else if (form.type==='Selection'){
                 config = form.selectionList;
             }
-            calculateDetailsSQueries.push(db.query(insertCalculateDetailSql,
-                [form.name, form.nameEN, JSON.stringify(config), form.type, calculateId]));
+            await db.query(insertCalculateDetailSql,
+                [form.name, form.nameEN, JSON.stringify(config), form.type, calculateId]);
         }
-
-        await Promise.all(calculateDetailsSQueries);
         res.json({status: 'success'});
 
     } catch (error) {
@@ -80,7 +76,6 @@ router.put('/', async (req, res, next) => {
 
         const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
                                           values (?, ?, ?, ?, ?);`;
-        const calculateDetailsSQueries = [];
 
         const forms = body.forms;
 
@@ -91,11 +86,9 @@ router.put('/', async (req, res, next) => {
             } else if (form.type==='Selection'){
                 config = form.selectionList;
             }
-            calculateDetailsSQueries.push(db.query(insertCalculateDetailSql,
-                [form.name, form.nameEN, JSON.stringify(config), form.type, body.id]));
+            db.query(insertCalculateDetailSql,
+                [form.name, form.nameEN, JSON.stringify(config), form.type, body.id]);
         }
-
-        await Promise.all(calculateDetailsSQueries);
         res.json({status: 'success'});
     } catch (error) {
         next(error)
