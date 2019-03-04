@@ -6,3 +6,4 @@ yarn install
 pm2 stop app.js
 pm2 start app.js
 pm2 status
+exit 0
