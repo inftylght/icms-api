@@ -23,9 +23,11 @@ router.get('/list', async (req, res, next) => {
             articleList.push({
                 id: result.id,
                 title: result.title,
-                text: result.text? result.text.substr(0, 200): '',
+                text: result.text? result.text.substr(0, 200)
+                    .replace(/\*/g, ''): '',
                 titleEN: result.titleEN,
-                textEN: result.textEN? result.textEN.substr(0, 200): '',
+                textEN: result.textEN? result.textEN.substr(0, 200)
+                    .replace(/\*/g, ''): '',
             });
         }
         res.send(articleList);
