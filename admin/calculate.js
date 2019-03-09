@@ -41,8 +41,8 @@ router.post('/', async (req, res, next) => {
         const calculateResult = await db.query(sql, [body.name, body.nameEN, body.formula]);
         const calculateId = calculateResult.results.insertId;
 
-        const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
-                                          values (?, ?, ?, ?, ?);`;
+        const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id, variable)
+                                          values (?, ?, ?, ?, ?, ?);`;
         const forms = body.forms;
 
         for (let form of forms) {
@@ -53,7 +53,7 @@ router.post('/', async (req, res, next) => {
                 config = form.selectionList;
             }
             await db.query(insertCalculateDetailSql,
-                [form.name, form.nameEN, JSON.stringify(config), form.type, calculateId]);
+                [form.name, form.nameEN, JSON.stringify(config), form.type, calculateId, form.variable]);
         }
         res.json({status: 'success'});
 
@@ -74,8 +74,8 @@ router.put('/', async (req, res, next) => {
         const calculateDetailDeleteSql = `delete from calculate_detail where calculate_id=?`;
         await db.query(calculateDetailDeleteSql, [Number(body.id)]);
 
-        const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id)
-                                          values (?, ?, ?, ?, ?);`;
+        const insertCalculateDetailSql = `insert into calculate_detail(name, nameEN, config, type, calculate_id, variable)
+                                          values (?, ?, ?, ?, ?, ?);`;
 
         const forms = body.forms;
 
@@ -87,7 +87,7 @@ router.put('/', async (req, res, next) => {
                 config = form.selectionList;
             }
             db.query(insertCalculateDetailSql,
-                [form.name, form.nameEN, JSON.stringify(config), form.type, body.id]);
+                [form.name, form.nameEN, JSON.stringify(config), form.type, body.id, form.variable]);
         }
         res.json({status: 'success'});
     } catch (error) {
